@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>NativeDiscord</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsSdkPackageVersion>10.0.19041.38</WindowsSdkPackageVersion>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240829007" />
+    <PackageReference Include="Markdig" Version="0.37.0" />
+    <PackageReference Include="ColorCode.Core" Version="2.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

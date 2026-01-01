@@ -1,0 +1,67 @@
+<UserControl
+    x:Class="NativeDiscord.Controls.EmbedControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NativeDiscord.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:NativeDiscord.Models"
+    mc:Ignorable="d">
+
+    <Grid Background="#2B2D31" CornerRadius="4" BorderThickness="4,0,0,0" MaxWidth="432" Margin="0,4,0,0" HorizontalAlignment="Left">
+        <!-- Border Color Binding is tricky on Grid.BorderBrush directly with Hex string. 
+             We will bind Background of a border rectangle instead or use a Converter. 
+             Let's use a Rectangle for the left border strip to be safe and easy. -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Accent Border -->
+        <Rectangle Grid.Column="0" Fill="{x:Bind EmbedColorBrush, Mode=OneWay}" RadiusX="2" RadiusY="2"/>
+        
+        <!-- Content -->
+        <Grid Grid.Column="1" Padding="12,8,12,16" Background="#2B2D31" CornerRadius="0,4,4,0">
+             <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="*"/>
+               <ColumnDefinition Width="Auto"/> <!-- Thumbnail -->
+           </Grid.ColumnDefinitions>
+           
+           <StackPanel Grid.Column="0" Spacing="8">
+               
+               <!-- Provider / Author (Skipped for now) -->
+               
+               <!-- Title -->
+               <TextBlock Text="{x:Bind Embed.Title, Mode=OneWay}" 
+                          FontWeight="SemiBold" 
+                          Foreground="#F2F3F5" 
+                          TextWrapping="Wrap" 
+                          Visibility="{x:Bind TitleVisibility, Mode=OneWay}"/>
+               
+               <!-- Description -->
+               <RichTextBlock xmlns:helpers="using:NativeDiscord.Helpers" 
+                              helpers:MarkdownTextHelper.Markdown="{x:Bind Embed.Description, Mode=OneWay}" 
+                              helpers:MarkdownTextHelper.DiscordService="{x:Bind DiscordService, Mode=OneWay}"
+                              helpers:MarkdownTextHelper.RefreshId="{x:Bind RefreshId, Mode=OneWay}"
+                              helpers:MarkdownTextHelper.CurrentGuildId="{x:Bind CurrentGuildId, Mode=OneWay}"
+                              Foreground="#DBDEE1" 
+                              TextWrapping="Wrap" 
+                              FontSize="14"
+                              Visibility="{x:Bind DescriptionVisibility, Mode=OneWay}"/>
+               
+               <!-- Large Image -->
+               <Border CornerRadius="4" Margin="0,8,0,0" HorizontalAlignment="Left" Visibility="{x:Bind ImageVisibility, Mode=OneWay}">
+                   <Image Source="{x:Bind Embed.Image.Url, Mode=OneWay}" 
+                          MaxHeight="300" 
+                          Stretch="Uniform"/>
+               </Border>
+           </StackPanel>
+           
+           <!-- Thumbnail -->
+           <Border Grid.Column="1" CornerRadius="4" Width="80" Height="80" Margin="16,0,0,0" VerticalAlignment="Top" Visibility="{x:Bind ThumbnailVisibility, Mode=OneWay}">
+               <Image Source="{x:Bind Embed.Thumbnail.Url, Mode=OneWay}" 
+                      Stretch="UniformToFill"/>
+           </Border>
+        </Grid>
+    </Grid>
+</UserControl>

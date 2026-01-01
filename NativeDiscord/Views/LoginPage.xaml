@@ -1,0 +1,29 @@
+<Page
+    x:Class="NativeDiscord.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Padding="10" Background="#202225">
+            <TextBlock Text="Login to Discord (WebView)" Foreground="White" HorizontalAlignment="Center" Margin="10"/>
+        </StackPanel>
+
+        <!-- WebView2 Control -->
+        <WebView2 x:Name="LoginWebView" Grid.Row="1" Source="https://discord.com/login"/>
+        
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingOverlay" Grid.Row="1" Background="#36393f" Visibility="Collapsed">
+            <ProgressRing IsActive="True" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="Verifying Token..." Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,100"/>
+        </Grid>
+    </Grid>
+</Page>

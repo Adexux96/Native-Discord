@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "NativeDiscord (Unpackaged)": {
+            "commandName": "Project",
+            "nativeDebugging": false
+        }
+    }
+}
