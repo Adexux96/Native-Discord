@@ -957,11 +957,29 @@ namespace NativeDiscord.Views
         // Helper to init wraps
         public void InitializeWrappers()
         {
-            if (Message?.Embeds != null)
+            try
             {
-                Embeds = new ObservableCollection<EmbedViewModel>(
-                    Message.Embeds.Select(e => new EmbedViewModel { Embed = e, DiscordService = Service, CurrentGuildId = CurrentGuildId })
-                );
+                if (Message != null && Message.Embeds != null)
+                {
+                    var viewModels = new System.Collections.Generic.List<EmbedViewModel>();
+                    foreach (var e in Message.Embeds)
+                    {
+                        if (e != null)
+                        {
+                            viewModels.Add(new EmbedViewModel 
+                            { 
+                                Embed = e, 
+                                DiscordService = Service, 
+                                CurrentGuildId = CurrentGuildId 
+                            });
+                        }
+                    }
+                    Embeds = new ObservableCollection<EmbedViewModel>(viewModels);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in InitializeWrappers: {ex.Message}");
             }
         }
 
