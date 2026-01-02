@@ -1,24 +1,26 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
 using System.Collections.Generic;
 using Windows.UI;
 
 namespace NativeDiscord.Models
 {
-    public class DMChannelViewModel : System.ComponentModel.INotifyPropertyChanged
+    public class DMChannelViewModel : System.ComponentModel.INotifyPropertyChanged, IDisposable
     {
         private NativeDiscord.Services.DiscordService _service;
         private string _targetUserId;
+        private bool _disposed;
 
         public Channel Channel { get; }
         public string Name { get; set; }
         public string IconUrl { get; set; }
         public string Subtitle { get; set; } // Last message or status
         public Visibility SubtitleVisibility => string.IsNullOrEmpty(Subtitle) ? Visibility.Collapsed : Visibility.Visible;
-        
+
         private Brush _statusColor = new SolidColorBrush(Color.FromArgb(255, 116, 127, 141)); // Default Gray
-        public Brush StatusColor 
-        { 
+        public Brush StatusColor
+        {
             get => _statusColor;
             set
             {
@@ -27,7 +29,7 @@ namespace NativeDiscord.Models
                     _statusColor = value;
                     PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(StatusColor)));
                 }
-            } 
+            }
         }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
@@ -36,7 +38,7 @@ namespace NativeDiscord.Models
         {
             Channel = channel;
             _service = service;
-            
+
             // Logic to determine Name and Icon from Recipients
             if (channel.Recipients != null && channel.Recipients.Count > 0)
             {
@@ -47,7 +49,7 @@ namespace NativeDiscord.Models
                     _targetUserId = user.Id;
                     Name = user.DisplayName;
                     IconUrl = user.AvatarUrl;
-                    
+
                     // Initial Status Check
                     UpdateStatus();
                 }
@@ -55,7 +57,7 @@ namespace NativeDiscord.Models
                 {
                     // Group DM
                     var names = new List<string>();
-                    foreach(var r in channel.Recipients) names.Add(r.DisplayName);
+                    foreach (var r in channel.Recipients) names.Add(r.DisplayName);
                     Name = string.Join(", ", names);
                     IconUrl = "ms-appx:///Assets/DiscordLogo.png"; // Fallback for Group DM icon
                 }
@@ -72,19 +74,42 @@ namespace NativeDiscord.Models
             }
         }
 
+        ~DMChannelViewModel()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            // Always detach from long-lived service events to avoid leaking this VM.
+            if (_service != null)
+            {
+                _service.PresenceUpdated -= Service_PresenceUpdated;
+            }
+
+            _service = null;
+            _targetUserId = null;
+        }
+
         private void UpdateStatus()
         {
             if (_service == null || string.IsNullOrEmpty(_targetUserId)) return;
 
-            string status = _service.GetUserStatus(_targetUserId); // Assuming method exists or we check relationships
-            
-            // Dispatch to UI Thread if needed, but safe to set property usually
-            // Map status to color
-            
+            string status = _service.GetUserStatus(_targetUserId);
+
             Color color;
             switch (status)
             {
-                case "online": 
+                case "online":
                     color = Color.FromArgb(255, 35, 165, 89); // Green
                     break;
                 case "idle":
@@ -102,28 +127,27 @@ namespace NativeDiscord.Models
 
         private void Service_PresenceUpdated(object sender, PresenceUpdate e)
         {
+            if (_disposed) return;
+
             if (e.User != null && e.User.Id == _targetUserId)
             {
-                // Ensure UI Thread for property change in some contexts, but usually OK in bindings unless specifically checked
-                // For safety we can use DispatcherQueue but we don't have access to it easily here.
-                // Assuming Binding handles it or invoke on UI context.
-                // Actually, WinUI 3 bindings usually require UI thread. 
-                // We'll trust the caller handles the service events on a context relevant or Dispatcher is available?
-                // DiscordGatewayService callbacks run on thread pool. We NEED Dispatcher.
-                
                 try
                 {
                     if (App.MainWindow != null)
                     {
-                        App.MainWindow.DispatcherQueue.TryEnqueue(() => 
+                        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
                         {
+                            if (_disposed) return;
                             UpdateStatus();
                         });
+                    }
+                    else
+                    {
+                        UpdateStatus();
                     }
                 }
                 catch
                 {
-                    // Fallback
                     UpdateStatus();
                 }
             }
