@@ -123,7 +123,7 @@ namespace NativeDiscord.Views
             if (_typingTimer != null)
             {
                 _typingTimer.Stop();
-                _typingTimer.Tick -= UpdateTypingIndicator;
+                _typingTimer.Tick -= TypingTimer_Tick;
                 _typingTimer = null;
             }
             
@@ -243,9 +243,14 @@ namespace NativeDiscord.Views
             {
                 _typingTimer = new DispatcherTimer();
                 _typingTimer.Interval = TimeSpan.FromSeconds(1);
-                _typingTimer.Tick += (s, e) => UpdateTypingIndicator();
+                _typingTimer.Tick += TypingTimer_Tick;
             }
             if (!_typingTimer.IsEnabled) _typingTimer.Start();
+        }
+
+        private void TypingTimer_Tick(object sender, object e)
+        {
+            UpdateTypingIndicator();
         }
 
         private void UpdateTypingIndicator()
