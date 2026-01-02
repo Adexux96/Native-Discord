@@ -137,6 +137,20 @@ namespace NativeDiscord
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"Login Error: {ex.Message}");
+
+                        // Ensure we are on UI thread (we are in event handler, so yes)
+                        var dialog = new ContentDialog
+                        {
+                            Title = "Login Failed",
+                            Content = $"An error occurred while logging in:\n{ex.Message}\n\nPlease try again.",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.Content.XamlRoot
+                        };
+
+                        await dialog.ShowAsync();
+
+                        // Navigate back to login to try again
+                        ContentFrame.Navigate(typeof(Views.LoginPage));
                     }
                 };
             }
