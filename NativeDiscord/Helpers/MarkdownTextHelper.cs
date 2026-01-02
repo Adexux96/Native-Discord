@@ -26,6 +26,52 @@ using UIInlineCollection = Microsoft.UI.Xaml.Documents.InlineCollection;
 
 namespace NativeDiscord.Helpers
 {
+    // Fix for missing scopes in ColorCode.WinUI 2.x
+    public static class FixedScopeName
+    {
+        public const string PlainText = "PlainText";
+        public const string Keyword = "Keyword";
+        public const string PreprocessorKeyword = "PreprocessorKeyword";
+        public const string ControlKeyword = "ControlKeyword";
+        public const string PseudoKeyword = "PseudoKeyword";
+        public const string String = "String";
+        public const string StringCSharpVerbatim = "StringCSharpVerbatim";
+        public const string StringEscape = "StringEscape";
+        public const string Comment = "Comment";
+        public const string XmlDocComment = "XmlDocComment";
+        public const string XmlDocTag = "XmlDocTag";
+        public const string XmlComment = "XmlComment";
+        public const string Number = "Number";
+        public const string MarkdownHeader = "MarkdownHeader";
+        public const string MarkdownListItem = "MarkdownListItem";
+        public const string MarkdownEmph = "MarkdownEmph";
+        public const string MarkdownBold = "MarkdownBold";
+        public const string ClassName = "ClassName";
+        public const string Type = "Type";
+        public const string TypeVariable = "TypeVariable";
+        public const string NameSpace = "NameSpace";
+        public const string Constructor = "Constructor";
+        public const string Intrinsic = "Intrinsic";
+        public const string BuiltinFunction = "BuiltinFunction";
+        public const string Operator = "Operator";
+        public const string Delimiter = "Delimiter";
+        public const string Brackets = "Brackets";
+        public const string HtmlElementName = "HtmlElementName";
+        public const string HtmlAttributeName = "HtmlAttributeName";
+        public const string HtmlAttributeValue = "HtmlAttributeValue";
+        public const string HtmlTagDelimiter = "HtmlTagDelimiter";
+        public const string CssSelector = "CssSelector";
+        public const string CssPropertyName = "CssPropertyName";
+        public const string CssPropertyValue = "CssPropertyValue";
+        public const string BuiltinValue = "BuiltinValue";
+        public const string Attribute = "Attribute";
+        
+        // These might be missing in older/newer standard ColorCode packages
+        public const string JsonKey = "JsonKey";
+        public const string JsonString = "JsonString";
+        public const string JsonNumber = "JsonNumber";
+    }
+
     // Custom Discord-like syntax highlighting theme (based on VS Dark/Discord colors)
     public static class DiscordCodeStyle
     {
@@ -42,68 +88,68 @@ namespace NativeDiscord.Helpers
         public static readonly StyleDictionary Style = new StyleDictionary
         {
             // Plain text / default
-            new ColorCode.Styling.Style(ScopeName.PlainText) { Foreground = PlainTextColor, Background = BackgroundColor },
+            new ColorCode.Styling.Style(FixedScopeName.PlainText) { Foreground = PlainTextColor, Background = BackgroundColor },
             
             // Keywords
-            new ColorCode.Styling.Style(ScopeName.Keyword) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.PreprocessorKeyword) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.ControlKeyword) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.PseudoKeyword) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.Keyword) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.PreprocessorKeyword) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.ControlKeyword) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.PseudoKeyword) { Foreground = KeywordColor },
             
             // Strings
-            new ColorCode.Styling.Style(ScopeName.String) { Foreground = StringColor },
-            new ColorCode.Styling.Style(ScopeName.StringCSharpVerbatim) { Foreground = StringColor },
-            new ColorCode.Styling.Style(ScopeName.StringEscape) { Foreground = "#d7ba7d" },
+            new ColorCode.Styling.Style(FixedScopeName.String) { Foreground = StringColor },
+            new ColorCode.Styling.Style(FixedScopeName.StringCSharpVerbatim) { Foreground = StringColor },
+            new ColorCode.Styling.Style(FixedScopeName.StringEscape) { Foreground = "#d7ba7d" },
             
             // Comments
-            new ColorCode.Styling.Style(ScopeName.Comment) { Foreground = CommentColor },
-            new ColorCode.Styling.Style(ScopeName.XmlDocComment) { Foreground = CommentColor },
-            new ColorCode.Styling.Style(ScopeName.XmlDocTag) { Foreground = "#dbdee1" },
-            new ColorCode.Styling.Style(ScopeName.XmlComment) { Foreground = CommentColor },
+            new ColorCode.Styling.Style(FixedScopeName.Comment) { Foreground = CommentColor },
+            new ColorCode.Styling.Style(FixedScopeName.XmlDocComment) { Foreground = CommentColor },
+            new ColorCode.Styling.Style(FixedScopeName.XmlDocTag) { Foreground = "#dbdee1" },
+            new ColorCode.Styling.Style(FixedScopeName.XmlComment) { Foreground = CommentColor },
             
             // Numbers
-            new ColorCode.Styling.Style(ScopeName.Number) { Foreground = NumberColor },
+            new ColorCode.Styling.Style(FixedScopeName.Number) { Foreground = NumberColor },
             
             // Markdown Specifics
-            new ColorCode.Styling.Style(ScopeName.MarkdownHeader) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.MarkdownListItem) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.MarkdownEmph) { Foreground = PlainTextColor, Italic = true },
-            new ColorCode.Styling.Style(ScopeName.MarkdownBold) { Foreground = KeywordColor, Bold = true },
+            new ColorCode.Styling.Style(FixedScopeName.MarkdownHeader) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.MarkdownListItem) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.MarkdownEmph) { Foreground = PlainTextColor, Italic = true },
+            new ColorCode.Styling.Style(FixedScopeName.MarkdownBold) { Foreground = KeywordColor, Bold = true },
             
             // Common Scopes and Classes (Usually white in Discord)
-            new ColorCode.Styling.Style(ScopeName.ClassName) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.Type) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.TypeVariable) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.NameSpace) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.Constructor) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.ClassName) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Type) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.TypeVariable) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.NameSpace) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Constructor) { Foreground = PlainTextColor },
             // Functions/Methods (Mapped to Intrinsic as a fallback for some grammars)
-            new ColorCode.Styling.Style(ScopeName.Intrinsic) { Foreground = FunctionColor },
-            new ColorCode.Styling.Style(ScopeName.BuiltinFunction) { Foreground = FunctionColor },
+            new ColorCode.Styling.Style(FixedScopeName.Intrinsic) { Foreground = FunctionColor },
+            new ColorCode.Styling.Style(FixedScopeName.BuiltinFunction) { Foreground = FunctionColor },
             
             // Operators and Delimiters
-            new ColorCode.Styling.Style(ScopeName.Operator) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.Delimiter) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.Brackets) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Operator) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Delimiter) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Brackets) { Foreground = PlainTextColor },
             
             // HTML/XML
-            new ColorCode.Styling.Style(ScopeName.HtmlElementName) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.HtmlAttributeName) { Foreground = NumberColor },
-            new ColorCode.Styling.Style(ScopeName.HtmlAttributeValue) { Foreground = StringColor },
-            new ColorCode.Styling.Style(ScopeName.HtmlTagDelimiter) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.HtmlElementName) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.HtmlAttributeName) { Foreground = NumberColor },
+            new ColorCode.Styling.Style(FixedScopeName.HtmlAttributeValue) { Foreground = StringColor },
+            new ColorCode.Styling.Style(FixedScopeName.HtmlTagDelimiter) { Foreground = PlainTextColor },
             
             // CSS
-            new ColorCode.Styling.Style(ScopeName.CssSelector) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.CssPropertyName) { Foreground = NumberColor },
-            new ColorCode.Styling.Style(ScopeName.CssPropertyValue) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.CssSelector) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.CssPropertyName) { Foreground = NumberColor },
+            new ColorCode.Styling.Style(FixedScopeName.CssPropertyValue) { Foreground = PlainTextColor },
             
             // JSON
-            new ColorCode.Styling.Style(ScopeName.JsonKey) { Foreground = KeywordColor },
-            new ColorCode.Styling.Style(ScopeName.JsonString) { Foreground = StringColor },
-            new ColorCode.Styling.Style(ScopeName.JsonNumber) { Foreground = NumberColor },
+            new ColorCode.Styling.Style(FixedScopeName.JsonKey) { Foreground = KeywordColor },
+            new ColorCode.Styling.Style(FixedScopeName.JsonString) { Foreground = StringColor },
+            new ColorCode.Styling.Style(FixedScopeName.JsonNumber) { Foreground = NumberColor },
             
             // Misc
-            new ColorCode.Styling.Style(ScopeName.BuiltinValue) { Foreground = PlainTextColor },
-            new ColorCode.Styling.Style(ScopeName.Attribute) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.BuiltinValue) { Foreground = PlainTextColor },
+            new ColorCode.Styling.Style(FixedScopeName.Attribute) { Foreground = PlainTextColor },
         };
     }
 
