@@ -14,8 +14,12 @@
     <!-- Deployment Optimization -->
     <SelfContained>true</SelfContained>
     <PublishTrimmed>false</PublishTrimmed>
-    <TrimMode>partial</TrimMode>
-    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <!-- Single File Packaging (Reduces size & garbage) -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Filter satellite assemblies (languages) -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
