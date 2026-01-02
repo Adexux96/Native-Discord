@@ -21,7 +21,14 @@ namespace NativeDiscord.Views
         public ServerPage()
         {
             this.InitializeComponent();
+            
+            // CRITICAL: Disable page caching
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+            
+            // CRITICAL: Prevent ChatFrame from caching pages
+            ChatFrame.CacheSize = 0;
         }
+        
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -54,17 +61,47 @@ namespace NativeDiscord.Views
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
+            
+            // CRITICAL: Unsubscribe from events
             if (_discordService != null)
             {
                  _discordService.VoiceStateUpdated -= DiscordService_VoiceStateUpdated;
+                 _discordService = null;
             }
+            
+            // Clear nested frame to help release ChatPage
+            ChatFrame.BackStack.Clear();
+            ChatFrame.Content = null;
+            
+            // Clear channel items and their voice users
+            foreach (var item in ChannelItems)
+            {
+                item.VoiceUsers?.Clear();
+            }
+            ChannelItems.Clear();
+            _channelMap.Clear();
+            
+            // Clear ListView source
+            if (ChannelList != null)
+            {
+                ChannelList.ItemsSource = null;
+            }
+            
+            // Release avatar image
+            if (CurrentUserAvatar != null)
+            {
+                CurrentUserAvatar.ImageSource = null;
+            }
+            
+            _currentServer = null;
+            _targetChannelId = null;
         }
 
         private void DiscordService_VoiceStateUpdated(object sender, NativeDiscord.Models.VoiceState e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (e.GuildId != _currentServer.Id) return;
+                if (e.GuildId != _currentServer?.Id) return;
 
                 // 1. Remove user from ANY channel they might be in
                 foreach (var item in ChannelItems)

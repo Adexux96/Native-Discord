@@ -44,6 +44,9 @@ namespace NativeDiscord.Views
         public ChatPage()
         {
             this.InitializeComponent();
+            
+            // CRITICAL: Disable page caching
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -101,6 +104,8 @@ namespace NativeDiscord.Views
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
+            
+            // CRITICAL: Unsubscribe from all events
             if (_discordService != null)
             {
                 _discordService.MessageReceived -= OnMessageReceived;
@@ -111,18 +116,40 @@ namespace NativeDiscord.Views
                 _discordService.MessageReactionRemoved -= OnMessageReactionRemoved;
                 _discordService.UserResolved -= OnUserResolved;
                 _discordService.ChannelResolved -= OnChannelResolved;
+                _discordService = null;
             }
             
-            _typingTimer?.Stop();
-            _typingUsers.Clear();
+            // Stop and dispose timer
+            if (_typingTimer != null)
+            {
+                _typingTimer.Stop();
+                _typingTimer.Tick -= UpdateTypingIndicator;
+                _typingTimer = null;
+            }
+            
+            _typingUsers?.Clear();
+            _typingUsers = null;
             TypingIndicatorPanel.Visibility = Visibility.Collapsed;
 
+            // CRITICAL: Clear ItemsSource before clearing collection to help UI release references
             MessagesList.ItemsSource = null;
+            
+            // Dispose all MessageViewModels to release their resources
+            foreach (var vm in Messages)
+            {
+                if (vm is IDisposable d)
+                {
+                    try { d.Dispose(); } catch { }
+                }
+            }
             Messages.Clear();
 
             SidebarUser = null;
             Context = null;
             _currentChannel = null;
+            
+            // Clear reply state
+            _replyingToMessage = null;
         }
 
         private void OnUserResolved(object sender, string userId)
@@ -223,6 +250,8 @@ namespace NativeDiscord.Views
 
         private void UpdateTypingIndicator()
         {
+            if (_typingUsers == null) return;
+            
             // Remove old
             var now = DateTime.Now;
             var expired = _typingUsers.Where(kv => (now - kv.Value.Time).TotalSeconds > 10).Select(kv => kv.Key).ToList();
@@ -267,7 +296,7 @@ namespace NativeDiscord.Views
                         return;
 
                     // Clear typing status for this user
-                    if (_typingUsers.ContainsKey(msg.Author.Id))
+                    if (_typingUsers != null && _typingUsers.ContainsKey(msg.Author.Id))
                     {
                         _typingUsers.Remove(msg.Author.Id);
                         UpdateTypingIndicator();
@@ -345,6 +374,11 @@ namespace NativeDiscord.Views
                 if (vm != null)
                 {
                     Messages.Remove(vm);
+                    // Dispose to release resources
+                    if (vm is IDisposable d)
+                    {
+                        try { d.Dispose(); } catch { }
+                    }
                     // Regrouping might be needed here, but for now simple removal is okay
                 }
             });
@@ -805,8 +839,10 @@ namespace NativeDiscord.Views
         public bool CanWrite { get; set; } = true;
     }
 
-    public class MessageViewModel : System.ComponentModel.INotifyPropertyChanged
+    public class MessageViewModel : System.ComponentModel.INotifyPropertyChanged, IDisposable
     {
+        private bool _disposed;
+        
         public DiscordService Service { get; set; }
         public Message Message { get; set; }
         public bool ShowHeader { get; set; }
@@ -884,6 +920,33 @@ namespace NativeDiscord.Views
 
         public MessageViewModel()
         {
+        }
+
+        ~MessageViewModel()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            // Clear heavy references
+            if (Embeds != null)
+            {
+                Embeds.Clear();
+                Embeds = null;
+            }
+            
+            Service = null;
+            Message = null;
         }
 
         // Helper to init wraps

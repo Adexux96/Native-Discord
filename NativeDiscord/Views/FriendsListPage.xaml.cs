@@ -24,6 +24,10 @@ namespace NativeDiscord.Views
         public FriendsListPage()
         {
             this.InitializeComponent();
+            
+            // CRITICAL: Disable caching to allow this page to be GC'd
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+            
             _timer = new Microsoft.UI.Xaml.DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
@@ -45,11 +49,35 @@ namespace NativeDiscord.Views
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
+            
+            // CRITICAL: Clean up to prevent memory leaks
             if (_discordService != null)
             {
                 _discordService.PresenceUpdated -= OnPresenceUpdated;
+                _discordService = null;
             }
-            _timer.Stop();
+            
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _timer.Tick -= Timer_Tick;
+            }
+
+            // Clear all collections to release references
+            FilteredRelationships.Clear();
+            ActiveFriends.Clear();
+            _allRelationships?.Clear();
+            _allRelationships = null;
+            
+            // Clear ListView sources to help release UI elements
+            if (FriendsListView != null)
+            {
+                FriendsListView.ItemsSource = null;
+            }
+            if (ActiveNowList != null)
+            {
+                ActiveNowList.ItemsSource = null;
+            }
         }
 
         private void Timer_Tick(object sender, object e)
