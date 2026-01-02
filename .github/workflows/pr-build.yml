@@ -1,13 +1,17 @@
 # Continuous Integration workflow for Native Discord
-# Automatically builds and validates code on pull requests and pushes to main
+# Handles PR checks, main branch builds, and automated releases on tags
 
-name: Build and Test
+name: Build and Release
 
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ] # Triggers on version tags (e.g., v1.0.0)
   pull_request:
     branches: [ main ]
+
+permissions:
+  contents: write # Required for creating releases
 
 jobs:
   build:
@@ -45,6 +49,7 @@ jobs:
     - name: Build solution
       run: msbuild ${{ env.Solution_Name }} /p:Configuration=${{ env.Configuration }} /p:Platform=${{ env.Platform }} /p:AppxBundle=Never /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundlePlatforms="${{ env.Platform }}" /p:WindowsPackageType=None
 
+    # Upload Artifacts (for PRs and Commits)
     - name: Upload build artifacts
       if: matrix.configuration == 'Release'
       uses: actions/upload-artifact@v4
@@ -54,8 +59,17 @@ jobs:
           NativeDiscord/bin/${{ matrix.platform }}/${{ matrix.configuration }}/net8.0-windows10.0.19041.0/
         retention-days: 7
 
-    - name: Check for build warnings
-      if: always()
+    # Release Creation Step (Only runs on tags)
+    - name: Create Zip Archive
+      if: startsWith(github.ref, 'refs/tags/') && matrix.configuration == 'Release'
       run: |
-        echo "Build completed for ${{ matrix.configuration }} - ${{ matrix.platform }}"
-        echo "Check the logs above for any warnings or errors"
+        Compress-Archive -Path NativeDiscord/bin/${{ matrix.platform }}/${{ matrix.configuration }}/net8.0-windows10.0.19041.0/* -DestinationPath NativeDiscord-${{ github.ref_name }}.zip
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/') && matrix.configuration == 'Release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: NativeDiscord-${{ github.ref_name }}.zip
+        generate_release_notes: true
+        draft: false
+        prerelease: false
