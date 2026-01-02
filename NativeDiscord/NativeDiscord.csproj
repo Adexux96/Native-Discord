@@ -18,6 +18,8 @@
     <PublishSingleFile>true</PublishSingleFile>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Fix for WinUI 3 SingleFile build -->
+    <EnableMsixTooling>true</EnableMsixTooling>
     <!-- Filter satellite assemblies (languages) -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
