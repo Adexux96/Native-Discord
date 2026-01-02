@@ -79,6 +79,7 @@ namespace NativeDiscord
                             TargetChannelId = channelId
                         };
                         ContentFrame.Navigate(typeof(Views.ServerPage), context);
+                        ClearContentFrameBackStack();
                     }
                 }
                 else
@@ -90,6 +91,7 @@ namespace NativeDiscord
                         Service = _discordService,
                         TargetChannel = channel
                     });
+                    ClearContentFrameBackStack();
                     
                     // Clear Server Selection
                     _suppressNavigation = true;
@@ -130,6 +132,7 @@ namespace NativeDiscord
                         
                         // Navigate to Home (Friends) by default
                         ContentFrame.Navigate(typeof(Views.FriendsPage), _discordService);
+                        ClearContentFrameBackStack();
                     }
                     catch (Exception ex)
                     {
@@ -149,6 +152,7 @@ namespace NativeDiscord
                 // Navigate
                 var context = new Views.ServerContext { Service = _discordService, Server = server };
                 ContentFrame.Navigate(typeof(Views.ServerPage), context);
+                ClearContentFrameBackStack();
             }
         }
 
@@ -156,6 +160,7 @@ namespace NativeDiscord
         {
             ServerList.SelectedItem = null; // Deselect server
             ContentFrame.Navigate(typeof(Views.FriendsPage), _discordService);
+            ClearContentFrameBackStack();
         }
 
         // Search Implementation
@@ -367,6 +372,7 @@ namespace NativeDiscord
                             Service = _discordService,
                             TargetChannel = channel
                         });
+                        ClearContentFrameBackStack();
                     }
                 }
                 else if (item.Type == "User")
@@ -378,6 +384,7 @@ namespace NativeDiscord
                              Service = _discordService, 
                              TargetUserId = user.Id 
                          });
+                         ClearContentFrameBackStack();
                     }
                     else if (item.OriginalObject is Models.Channel channel)
                     {
@@ -388,8 +395,20 @@ namespace NativeDiscord
                             Service = _discordService,
                             TargetChannel = channel
                          });
+                         ClearContentFrameBackStack();
                     }
                 }
+            }
+        }
+
+        private void ClearContentFrameBackStack()
+        {
+            var backStack = ContentFrame?.BackStack;
+            if (backStack == null) return;
+
+            while (backStack.Count > 0)
+            {
+                backStack.RemoveAt(0);
             }
         }
 

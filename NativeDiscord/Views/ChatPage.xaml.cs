@@ -64,6 +64,7 @@ namespace NativeDiscord.Views
                 _discordService.MessageReactionAdded += OnMessageReactionAdded;
                 _discordService.MessageReactionRemoved += OnMessageReactionRemoved;
                 _discordService.UserResolved += OnUserResolved;
+                _discordService.ChannelResolved += OnChannelResolved;
 
                 ChannelNameBlock.Text = _currentChannel.Name;
                 
@@ -111,7 +112,17 @@ namespace NativeDiscord.Views
                 _discordService.UserResolved -= OnUserResolved;
                 _discordService.ChannelResolved -= OnChannelResolved;
             }
+            
             _typingTimer?.Stop();
+            _typingUsers.Clear();
+            TypingIndicatorPanel.Visibility = Visibility.Collapsed;
+
+            MessagesList.ItemsSource = null;
+            Messages.Clear();
+
+            SidebarUser = null;
+            Context = null;
+            _currentChannel = null;
         }
 
         private void OnUserResolved(object sender, string userId)

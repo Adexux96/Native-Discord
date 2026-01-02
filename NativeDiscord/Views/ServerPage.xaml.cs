@@ -310,6 +310,13 @@ namespace NativeDiscord.Views
                 };
 
                 ChatFrame.Navigate(typeof(ChatPage), context);
+
+                // Clear chat backstack to avoid keeping old ChatPage instances in memory
+                while (ChatFrame.BackStack.Count > 0)
+                {
+                    ChatFrame.BackStack.RemoveAt(0);
+                }
+
                 _discordService.Http.AddToRecentChannels(item.Channel);
             }
         }
