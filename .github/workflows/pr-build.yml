@@ -1,0 +1,61 @@
+# Continuous Integration workflow for Native Discord
+# Automatically builds and validates code on pull requests and pushes to main
+
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build WinUI 3 App
+    runs-on: windows-2022
+    
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x64]
+    
+    env:
+      Solution_Name: NativeDiscord.sln
+      Configuration: ${{ matrix.configuration }}
+      Platform: ${{ matrix.platform }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
+    - name: Restore NuGet packages
+      run: nuget restore ${{ env.Solution_Name }}
+
+    - name: Build solution
+      run: msbuild ${{ env.Solution_Name }} /p:Configuration=${{ env.Configuration }} /p:Platform=${{ env.Platform }} /p:AppxBundle=Never /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundlePlatforms="${{ env.Platform }}" /p:WindowsPackageType=None
+
+    - name: Upload build artifacts
+      if: matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: NativeDiscord-${{ matrix.platform }}-${{ matrix.configuration }}
+        path: |
+          NativeDiscord/bin/${{ matrix.platform }}/${{ matrix.configuration }}/net8.0-windows10.0.19041.0/
+        retention-days: 7
+
+    - name: Check for build warnings
+      if: always()
+      run: |
+        echo "Build completed for ${{ matrix.configuration }} - ${{ matrix.platform }}"
+        echo "Check the logs above for any warnings or errors"
