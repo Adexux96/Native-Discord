@@ -13,15 +13,19 @@
     
     <!-- Deployment Optimization -->
     <SelfContained>true</SelfContained>
-    <PublishTrimmed>false</PublishTrimmed>
-    <!-- Single File Packaging (Reduces size & garbage) -->
-    <PublishSingleFile>true</PublishSingleFile>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <!-- Fix for WinUI 3 SingleFile build -->
-    <EnableMsixTooling>true</EnableMsixTooling>
-    <!-- Filter satellite assemblies (languages) -->
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    
+    <!-- SIZE OPTIMIZATION: Enable Trimming -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    
+    <!-- CRASH FIX: Protect JSON Serialization from Trimming -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    
+    <!-- FOLDER CLEANUP: SingleFile is unstable with WinUI 3, so we use aggressive language filtering -->
+    <PublishSingleFile>false</PublishSingleFile>
+    
+    <!-- LANGUAGE CLEANUP: Force only English resources -->
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,15 +33,18 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <!-- Missing packages added below -->
     <PackageReference Include="Markdig" Version="0.37.0" />
     <PackageReference Include="ColorCode.WinUI" Version="2.0.13" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
+  
+  <!-- PREVENT TRIMMER FROM BREAKING REFLECTION (Fixes Crash) -->
+  <ItemGroup>
+      <TrimmerRootAssembly Include="Newtonsoft.Json" />
+      <TrimmerRootAssembly Include="NativeDiscord" />
+      <TrimmerRootAssembly Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
 
-  <!-- 
-    Defining the "HasPackageAndPublishMenuAdded" property will allow the VS project system to render "Publish" inside the context menu.
-  -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAdded)'!='true'">
     <HasPackageAndPublishMenuAdded>true</HasPackageAndPublishMenuAdded>
   </PropertyGroup>
