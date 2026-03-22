@@ -478,6 +478,8 @@ namespace NativeDiscord.Views
             {
                 if (beforeId == null)
                 {
+                    _hasMoreMessages = true;
+                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(LoadMoreVisibility)));
                     LoadingRing.IsActive = true;
                     MessagesList.ItemsSource = null;
                     Messages.Clear();
