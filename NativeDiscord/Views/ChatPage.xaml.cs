@@ -512,7 +512,6 @@ namespace NativeDiscord.Views
                 {
                     // Prepend older messages
                     // We need to re-evaluate the first existing message's header if we prepend
-                    var firstExisting = Messages.FirstOrDefault();
 
                     for (int i = orderedMessages.Count - 1; i >= 0; i--)
                     {
