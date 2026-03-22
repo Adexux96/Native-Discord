@@ -77,7 +77,11 @@
                                              </Ellipse.Fill>
                                          </Ellipse>
                                          <!-- Status Indicator (Mock) -->
-                                         <Ellipse Width="10" Height="10" Fill="{x:Bind StatusColor, Mode=OneWay}" Stroke="#2B2D31" StrokeThickness="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-2,-2"/> 
+                                         <Ellipse Width="10" Height="10" Stroke="#2B2D31" StrokeThickness="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-2,-2">
+                                             <Ellipse.Fill>
+                                                 <SolidColorBrush Color="{x:Bind StatusColor, Mode=OneWay}"/>
+                                             </Ellipse.Fill>
+                                         </Ellipse>
                                      </Grid>
                                      <StackPanel VerticalAlignment="Center">
                                          <TextBlock Text="{x:Bind Name}" Foreground="#DBDEE1" TextTrimming="CharacterEllipsis"/>

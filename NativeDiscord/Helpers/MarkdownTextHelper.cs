@@ -304,7 +304,7 @@ namespace NativeDiscord.Helpers
                 var editedRun = new UIRun 
                 { 
                     Text = " (edited)", 
-                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 148, 155, 164)), // #949BA4
+                    Foreground = (SolidColorBrush)Application.Current.Resources["DiscordTextMuted"],
                     FontSize = 11
                 };
 
@@ -469,7 +469,7 @@ namespace NativeDiscord.Helpers
 
         private static void ApplyRecursiveCSharpBooster(RichTextBlock codeRichText)
         {
-            var purple = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 210, 168, 255));
+            var purple = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 210, 168, 255)); // Function color
 
             foreach (var block in codeRichText.Blocks)
             {
@@ -549,7 +549,7 @@ namespace NativeDiscord.Helpers
         private static void ApplyMarkdownQuoteBooster(RichTextBlock codeRichText)
         {
             var runs = GetFlattenedRuns(codeRichText);
-            var green = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 87, 242, 135));
+            var green = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 87, 242, 135)); // Quote color
             bool isQuotedLine = false;
             bool isStartOfLine = true;
 
@@ -770,8 +770,8 @@ namespace NativeDiscord.Helpers
                 string displayText = content; // Fallback
                 
                 // Color
-                var brandColor = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 88, 101, 242)); // Blurple
-                var brandBackground = new SolidColorBrush(Windows.UI.Color.FromArgb(50, 88, 101, 242)); // Low opacity blurple
+                var brandColor = (SolidColorBrush)Application.Current.Resources["DiscordBrand"];
+                var brandBackground = (SolidColorBrush)Application.Current.Resources["DiscordBrandBackground"];
 
                 if (service != null && !string.IsNullOrEmpty(id))
                 {
@@ -836,8 +836,8 @@ namespace NativeDiscord.Helpers
 
         private static UIInline CreateChannelMentionUI(DiscordService service, string guildId, string channelId, string originalUrl, string currentGuildId)
         {
-            var brandColor = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 88, 101, 242)); // Blurple
-            var brandBackground = new SolidColorBrush(Windows.UI.Color.FromArgb(50, 88, 101, 242)); // Low opacity blurple
+            var brandColor = (SolidColorBrush)Application.Current.Resources["DiscordBrand"];
+            var brandBackground = (SolidColorBrush)Application.Current.Resources["DiscordBrandBackground"];
 
             string displayText = originalUrl;
 

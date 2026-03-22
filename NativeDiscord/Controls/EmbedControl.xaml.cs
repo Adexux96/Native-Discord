@@ -70,7 +70,7 @@ namespace NativeDiscord.Controls
         public Visibility ImageVisibility => !string.IsNullOrEmpty(Embed?.Image?.Url) ? Visibility.Visible : Visibility.Collapsed;
         public Visibility ThumbnailVisibility => !string.IsNullOrEmpty(Embed?.Thumbnail?.Url) ? Visibility.Visible : Visibility.Collapsed;
 
-        public SolidColorBrush EmbedColorBrush
+        public Windows.UI.Color EmbedColor
         {
             get
             {
@@ -82,11 +82,11 @@ namespace NativeDiscord.Controls
                         byte r = (byte)((c >> 16) & 0xFF);
                         byte g = (byte)((c >> 8) & 0xFF);
                         byte b = (byte)(c & 0xFF);
-                        return new SolidColorBrush(Windows.UI.Color.FromArgb(255, r, g, b));
+                        return Windows.UI.Color.FromArgb(255, r, g, b);
                     }
                     catch { }
                 }
-                return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 32, 34, 37)); // Default dark
+                return Windows.UI.Color.FromArgb(255, 32, 34, 37); // Default dark
             }
         }
     }

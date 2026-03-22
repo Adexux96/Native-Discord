@@ -25,6 +25,7 @@
             <SolidColorBrush x:Key="DiscordInteractiveActive" Color="#FFFFFF"/>
             
             <SolidColorBrush x:Key="DiscordBrand" Color="#5865F2"/>
+            <SolidColorBrush x:Key="DiscordBrandBackground" Color="#5865F2" Opacity="0.27"/>
             
             <!-- Code Block Colors (Verified Discord Docs) -->
             <SolidColorBrush x:Key="DiscordCodeBackground" Color="#2C2D32"/>

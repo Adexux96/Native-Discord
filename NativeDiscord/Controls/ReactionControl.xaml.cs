@@ -61,22 +61,23 @@ namespace NativeDiscord.Controls
         private void Render()
         {
             if (Reaction == null) return;
+            if (this.Content == null) return;
 
             CountText.Text = Reaction.Count.ToString();
 
             // Handle styling for "Me" (if I reacted)
             if (Reaction.Me)
             {
-                (this.Content as Grid).Background = new SolidColorBrush(Windows.UI.Color.FromArgb(70, 88, 101, 242));
-                (this.Content as Grid).BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 88, 101, 242)); 
-                CountText.Foreground = new SolidColorBrush(Microsoft.UI.Colors.White);
+                (this.Content as Grid).Background = (Brush)Application.Current.Resources["DiscordBrandBackground"];
+                (this.Content as Grid).BorderBrush = (Brush)Application.Current.Resources["DiscordBrand"];
+                CountText.Foreground = (Brush)Application.Current.Resources["DiscordInteractiveActive"];
             }
             else
             {
                  // Default Styling
-                 (this.Content as Grid).Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 47, 49, 54)); // #2F3136
+                 (this.Content as Grid).Background = (Brush)Application.Current.Resources["DiscordBackgroundSecondary"];
                  (this.Content as Grid).BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-                 CountText.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 185, 187, 190)); // #B9BBBE
+                 CountText.Foreground = (Brush)Application.Current.Resources["DiscordTextMuted"];
             }
 
             if (Reaction.Emoji.IsCustom)

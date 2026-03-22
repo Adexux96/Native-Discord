@@ -18,13 +18,13 @@ namespace NativeDiscord.Models
         public string Subtitle { get; set; } // Last message or status
         public Visibility SubtitleVisibility => string.IsNullOrEmpty(Subtitle) ? Visibility.Collapsed : Visibility.Visible;
 
-        private Brush _statusColor = new SolidColorBrush(Color.FromArgb(255, 116, 127, 141)); // Default Gray
-        public Brush StatusColor
+        private Color _statusColor = Color.FromArgb(255, 116, 127, 141); // Default Gray
+        public Color StatusColor
         {
             get => _statusColor;
             set
             {
-                if (_statusColor != value)
+                if (!_statusColor.Equals(value))
                 {
                     _statusColor = value;
                     PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(StatusColor)));
@@ -122,7 +122,7 @@ namespace NativeDiscord.Models
                     color = Color.FromArgb(255, 116, 127, 141); // Gray
                     break;
             }
-            StatusColor = new SolidColorBrush(color);
+            StatusColor = color;
         }
 
         private void Service_PresenceUpdated(object sender, PresenceUpdate e)
