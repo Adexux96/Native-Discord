@@ -9,10 +9,10 @@
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
     <WindowsPackageType>None</WindowsPackageType>
-    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     
     <!-- Deployment Optimization -->
-    <SelfContained>false</SelfContained>
+    <SelfContained>true</SelfContained>
     
     <!-- SIZE OPTIMIZATION: Enable Trimming -->
     <PublishTrimmed>true</PublishTrimmed>
