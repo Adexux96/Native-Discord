@@ -16,7 +16,7 @@
     
     <!-- SIZE OPTIMIZATION: Enable Trimming -->
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>full</TrimMode>
+    <TrimMode>partial</TrimMode>
     
     <!-- CRASH FIX: Protect JSON Serialization from Trimming -->
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>

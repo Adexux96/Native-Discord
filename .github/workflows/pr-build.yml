@@ -47,7 +47,7 @@ jobs:
       run: nuget restore ${{ env.Solution_Name }}
 
     - name: Build solution
-      run: msbuild ${{ env.Solution_Name }} /p:Configuration=${{ env.Configuration }} /p:Platform=${{ env.Platform }} /p:AppxBundle=Never /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundlePlatforms="${{ env.Platform }}" /p:WindowsPackageType=None
+      run: msbuild ${{ env.Solution_Name }} /p:Configuration=${{ env.Configuration }} /p:Platform=${{ env.Platform }} /p:RuntimeIdentifier=win-x64 /p:AppxBundle=Never /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundlePlatforms="${{ env.Platform }}" /p:WindowsPackageType=None
 
     # Upload Artifacts (for PRs and Commits)
     - name: Upload build artifacts
