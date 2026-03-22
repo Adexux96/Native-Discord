@@ -19,6 +19,7 @@ namespace NativeDiscord.Views
             if (e.Parameter is DiscordService service)
             {
                 _discordService = service;
+                LogoutButton.IsEnabled = true;
                 if (_discordService.CurrentUser != null)
                 {
                     UserDisplayName.Text = _discordService.CurrentUser.DisplayName;
@@ -30,6 +31,7 @@ namespace NativeDiscord.Views
 
         private void LogoutButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
+            if (_discordService == null) return;
             _discordService.Logout();
             if (App.MainWindow is MainWindow mw)
             {
