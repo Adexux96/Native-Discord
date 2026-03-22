@@ -6,11 +6,12 @@ using NativeDiscord.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 
 namespace NativeDiscord.Views
 {
-    public sealed partial class ChatPage : Page, System.ComponentModel.INotifyPropertyChanged
+    public sealed partial class ChatPage : Page, INotifyPropertyChanged
     {
         private DiscordService _discordService;
         private Channel _currentChannel;
@@ -39,7 +40,7 @@ namespace NativeDiscord.Views
             }
         }
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public ChatPage()
         {
@@ -214,7 +215,7 @@ namespace NativeDiscord.Views
              });
         }
 
-        private void OnUserTyping(object sender, Models.TypingStartPayload e)
+        private void OnUserTyping(object sender, TypingStartPayload e)
         {
             if (_currentChannel == null || e.ChannelId != _currentChannel.Id) return;
             if (e.UserId == _discordService.CurrentUser?.Id) return;
@@ -469,7 +470,7 @@ namespace NativeDiscord.Views
 
         public Visibility LoadMoreVisibility => _hasMoreMessages ? Visibility.Visible : Visibility.Collapsed;
 
-        private async System.Threading.Tasks.Task LoadMessagesAsync(string beforeId = null)
+        private async Task LoadMessagesAsync(string beforeId = null)
         {
             if (_isLoadingMore) return;
             _isLoadingMore = true;
@@ -481,6 +482,10 @@ namespace NativeDiscord.Views
                     LoadingRing.IsActive = true;
                     MessagesList.ItemsSource = null;
                     Messages.Clear();
+
+                    // Reset pagination state on initial load
+                    _hasMoreMessages = true;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadMoreVisibility)));
                 }
 
                 var rawMessages = await _discordService.Http.GetMessagesAsync(_currentChannel.Id, beforeId);
@@ -512,6 +517,7 @@ namespace NativeDiscord.Views
                 {
                     // Prepend older messages
                     // We need to re-evaluate the first existing message's header if we prepend
+                    var firstExisting = Messages.FirstOrDefault();
 
                     for (int i = orderedMessages.Count - 1; i >= 0; i--)
                     {
@@ -941,7 +947,7 @@ namespace NativeDiscord.Views
         public bool CanWrite { get; set; } = true;
     }
 
-    public class MessageViewModel : System.ComponentModel.INotifyPropertyChanged, IDisposable
+    public class MessageViewModel : INotifyPropertyChanged, IDisposable
     {
         private bool _disposed;
         
@@ -1082,8 +1088,8 @@ namespace NativeDiscord.Views
 
         // We need to call InitializeWrappers after setting Service/Message
         
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         public void NotifyHeaderChanged()
         {
@@ -1165,7 +1171,7 @@ namespace NativeDiscord.Views
         }
     }
 
-    public class EmbedViewModel : System.ComponentModel.INotifyPropertyChanged
+    public class EmbedViewModel : INotifyPropertyChanged
     {
         public NativeDiscord.Models.Embed Embed { get; set; }
         public DiscordService DiscordService { get; set; }
@@ -1187,8 +1193,8 @@ namespace NativeDiscord.Views
             RefreshId++;
         }
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => 
-            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -443,7 +443,7 @@ namespace NativeDiscord.Services
         {
             _token = null;
             Http.SetToken(null);
-            Gateway.Disconnect();
+            _ = Gateway.DisconnectAsync();
 
             CurrentUser = null;
             Guilds = null;

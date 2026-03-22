@@ -10,8 +10,8 @@ namespace NativeDiscord.Views
 
         public SettingsPage()
         {
-            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -29,8 +29,10 @@ namespace NativeDiscord.Views
             }
         }
 
-        private void LogoutButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
+            if (_discordService == null) return;
+
             _discordService.Logout();
             if (App.MainWindow is MainWindow mw)
             {

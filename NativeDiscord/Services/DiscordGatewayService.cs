@@ -53,15 +53,13 @@ namespace NativeDiscord.Services
 
         public void Disconnect()
         {
-            // Provide a synchronous wrapper for compatibility while ensuring
-            // that the asynchronous cleanup logic is fully awaited.
-            DisconnectAsync().GetAwaiter().GetResult();
+             // Synchronous fallback
+             _ = DisconnectAsync();
         }
 
         public async Task DisconnectAsync()
         {
             _cancellationTokenSource?.Cancel();
-
             var webSocket = _webSocket;
             var cancellationTokenSource = _cancellationTokenSource;
 
@@ -70,22 +68,18 @@ namespace NativeDiscord.Services
                 if (webSocket != null &&
                     (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived))
                 {
-                    await webSocket
-                        .CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None)
-                        .ConfigureAwait(false);
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None).ConfigureAwait(false);
                 }
             }
-            catch
-            {
-                // Swallow exceptions to preserve existing behavior.
-            }
+            catch { }
             finally
             {
                 webSocket?.Dispose();
                 cancellationTokenSource?.Dispose();
 
-                _webSocket = null;
-                _cancellationTokenSource = null;
+                if (ReferenceEquals(_webSocket, webSocket)) _webSocket = null;
+                if (ReferenceEquals(_cancellationTokenSource, cancellationTokenSource)) _cancellationTokenSource = null;
+
                 _sequenceNumber = null;
             }
         }
