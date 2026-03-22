@@ -68,16 +68,16 @@ namespace NativeDiscord.Controls
             // Handle styling for "Me" (if I reacted)
             if (Reaction.Me)
             {
-                (this.Content as Grid).Background = (Brush)Application.Current.Resources["DiscordBrandBackground"];
-                (this.Content as Grid).BorderBrush = (Brush)Application.Current.Resources["DiscordBrand"];
-                CountText.Foreground = (Brush)Application.Current.Resources["DiscordInteractiveActive"];
+                (this.Content as Grid).Background = (Brush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrandBackground"];
+                (this.Content as Grid).BorderBrush = (Brush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrand"];
+                CountText.Foreground = (Brush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordInteractiveActive"];
             }
             else
             {
                  // Default Styling
-                 (this.Content as Grid).Background = (Brush)Application.Current.Resources["DiscordBackgroundSecondary"];
+                 (this.Content as Grid).Background = (Brush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBackgroundSecondary"];
                  (this.Content as Grid).BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-                 CountText.Foreground = (Brush)Application.Current.Resources["DiscordTextMuted"];
+                 CountText.Foreground = (Brush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordTextMuted"];
             }
 
             if (Reaction.Emoji.IsCustom)

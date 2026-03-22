@@ -304,7 +304,7 @@ namespace NativeDiscord.Helpers
                 var editedRun = new UIRun 
                 { 
                     Text = " (edited)", 
-                    Foreground = (SolidColorBrush)Application.Current.Resources["DiscordTextMuted"],
+                    Foreground = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordTextMuted"],
                     FontSize = 11
                 };
 
@@ -359,7 +359,7 @@ namespace NativeDiscord.Helpers
             
             var border = new Border
             {
-                Background = (SolidColorBrush)Application.Current.Resources["DiscordCodeBackground"],
+                Background = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordCodeBackground"],
                 BorderThickness = new Thickness(0),
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(16),
@@ -375,7 +375,7 @@ namespace NativeDiscord.Helpers
 
             var codeRichText = new RichTextBlock
             {
-                FontFamily = (FontFamily)Application.Current.Resources["DiscordCodeFont"],
+                FontFamily = (FontFamily)Microsoft.UI.Xaml.Application.Current.Resources["DiscordCodeFont"],
                 // Don't set Foreground here - let the formatter apply individual colors
                 FontSize = 13,
                 IsTextSelectionEnabled = true
@@ -647,7 +647,7 @@ namespace NativeDiscord.Helpers
                 var listItem = (ListItemBlock)listBlock[i];
                 var prefix = listBlock.IsOrdered ? $"{i + 1}. " : "• ";
                 
-                p.Inlines.Add(new UIRun { Text = prefix, Foreground = (SolidColorBrush)Application.Current.Resources["DiscordTextMuted"] });
+                p.Inlines.Add(new UIRun { Text = prefix, Foreground = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordTextMuted"] });
 
                 foreach (var block in listItem)
                 {
@@ -691,13 +691,13 @@ namespace NativeDiscord.Helpers
             {
                 var border = new Border
                 {
-                    Background = (SolidColorBrush)Application.Current.Resources["DiscordCodeBackground"],
+                    Background = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordCodeBackground"],
                     CornerRadius = new CornerRadius(3),
                     Padding = new Thickness(4, 0, 4, 0),
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(2,0,2,0)
                 };
-                border.Child = new TextBlock { Text = code.Content, Foreground = (SolidColorBrush)Application.Current.Resources["DiscordTextNormal"], FontSize = 13 };
+                border.Child = new TextBlock { Text = code.Content, Foreground = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordTextNormal"], FontSize = 13 };
                 inlines.Add(new InlineUIContainer { Child = border });
             }
             else if (inline is LineBreakInline)
@@ -770,8 +770,8 @@ namespace NativeDiscord.Helpers
                 string displayText = content; // Fallback
                 
                 // Color
-                var brandColor = (SolidColorBrush)Application.Current.Resources["DiscordBrand"];
-                var brandBackground = (SolidColorBrush)Application.Current.Resources["DiscordBrandBackground"];
+                var brandColor = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrand"];
+                var brandBackground = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrandBackground"];
 
                 if (service != null && !string.IsNullOrEmpty(id))
                 {
@@ -836,8 +836,8 @@ namespace NativeDiscord.Helpers
 
         private static UIInline CreateChannelMentionUI(DiscordService service, string guildId, string channelId, string originalUrl, string currentGuildId)
         {
-            var brandColor = (SolidColorBrush)Application.Current.Resources["DiscordBrand"];
-            var brandBackground = (SolidColorBrush)Application.Current.Resources["DiscordBrandBackground"];
+            var brandColor = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrand"];
+            var brandBackground = (SolidColorBrush)Microsoft.UI.Xaml.Application.Current.Resources["DiscordBrandBackground"];
 
             string displayText = originalUrl;
 
