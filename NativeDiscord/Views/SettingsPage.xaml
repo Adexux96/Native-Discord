@@ -39,7 +39,7 @@
                 </StackPanel>
             </Border>
 
-            <Button Content="Logout" Background="#ED4245" Foreground="White" BorderThickness="0" Padding="16,8" CornerRadius="4"/>
+            <Button x:Name="LogoutButton" Click="LogoutButton_Click" Content="Logout" Background="#ED4245" Foreground="White" BorderThickness="0" Padding="16,8" CornerRadius="4"/>
         </StackPanel>
     </Grid>
 </Page>

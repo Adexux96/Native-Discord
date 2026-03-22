@@ -51,6 +51,20 @@ namespace NativeDiscord.Services
             }
         }
 
+        public void Disconnect()
+        {
+            _cancellationTokenSource?.Cancel();
+            try
+            {
+                if (_webSocket != null && _webSocket.State == WebSocketState.Open)
+                {
+                     _ = _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None);
+                }
+            }
+            catch { }
+            _webSocket = null;
+        }
+
         private async Task ReceiveLoop()
         {
             var buffer = new byte[8192];

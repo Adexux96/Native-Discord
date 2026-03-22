@@ -426,6 +426,14 @@ namespace NativeDiscord
             }
         }
 
+        public void Logout()
+        {
+            ServerList.ItemsSource = null;
+            ServerList.SelectedItem = null;
+            ContentFrame.Navigate(typeof(Views.LoginPage));
+            ClearContentFrameBackStack();
+        }
+
         public Visibility ToVisibility(bool b) => b ? Visibility.Visible : Visibility.Collapsed;
     }
 

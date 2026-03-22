@@ -467,6 +467,8 @@ namespace NativeDiscord.Views
         private bool _isLoadingMore = false;
         private bool _hasMoreMessages = true;
 
+        public Visibility LoadMoreVisibility => _hasMoreMessages ? Visibility.Visible : Visibility.Collapsed;
+
         private async System.Threading.Tasks.Task LoadMessagesAsync(string beforeId = null)
         {
             if (_isLoadingMore) return;
@@ -486,6 +488,7 @@ namespace NativeDiscord.Views
                 if (rawMessages.Count < 50)
                 {
                     _hasMoreMessages = false;
+                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(LoadMoreVisibility)));
                 }
 
                 // API gives newest first.

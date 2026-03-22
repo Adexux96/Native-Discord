@@ -439,6 +439,20 @@ namespace NativeDiscord.Services
             await Task.CompletedTask;
         }
 
+        public void Logout()
+        {
+            _token = null;
+            Http.SetToken(null);
+            Gateway.Disconnect();
+
+            CurrentUser = null;
+            Guilds = null;
+            Relationships = null;
+            _userCache.Clear();
+            _channelCache.Clear();
+            _pendingPresences = null;
+        }
+
         public async Task InitializeDataAsync()
         {
             CurrentUser = await Http.GetCurrentUserAsync();

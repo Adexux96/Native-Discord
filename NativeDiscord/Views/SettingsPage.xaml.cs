@@ -27,5 +27,14 @@ namespace NativeDiscord.Views
                 }
             }
         }
+
+        private void LogoutButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            _discordService.Logout();
+            if (App.MainWindow is MainWindow mw)
+            {
+                 mw.Logout();
+            }
+        }
     }
 }

@@ -94,7 +94,7 @@
                         Margin="0,16"
                         Click="LoadMoreButton_Click"
                         Style="{StaticResource DefaultButtonStyle}"
-                        Visibility="Visible"/>
+                        Visibility="{x:Bind LoadMoreVisibility, Mode=OneWay}"/>
             </ListView.Header>
             <ListView.ItemTemplate>
             <DataTemplate x:DataType="local:MessageViewModel">
