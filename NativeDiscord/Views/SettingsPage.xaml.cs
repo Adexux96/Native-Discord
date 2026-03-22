@@ -10,6 +10,7 @@ namespace NativeDiscord.Views
 
         public SettingsPage()
         {
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.InitializeComponent();
         }
 
