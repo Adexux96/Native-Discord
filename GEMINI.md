@@ -27,7 +27,7 @@ The application follows a modular architecture separating UI, Data, and Network 
 *   **`ChatPage.xaml`:** The main chat view supporting rich text, embeds, and attachments.
 
 ### Data Models (`NativeDiscord/Models/`)
-*   **`DataModels.cs`:** Contains strong-typed C# classes mirroring Discord's API objects (User, Message, Guild, Channel), using `[JsonPropertyName]` for serialization.
+*   **Data Models:** Custom models in the `Models/` directory (e.g., `User.cs`, `Message.cs`) with `[JsonPropertyName]` for serialization.
 
 ## Building and Running
 **Note: Building is currently not supported in this environment.**

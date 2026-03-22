@@ -321,6 +321,12 @@ namespace NativeDiscord.Views
             return permissions;
         }
 
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChatFrame.Navigate(typeof(SettingsPage), _discordService);
+            ChatFrame.BackStack.Clear();
+        }
+
         private void ChannelList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ChannelList.SelectedItem is ChannelViewItem item)

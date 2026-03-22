@@ -1,12 +1,31 @@
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using NativeDiscord.Services;
 
 namespace NativeDiscord.Views
 {
     public sealed partial class SettingsPage : Page
     {
+        private DiscordService _discordService;
+
         public SettingsPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter is DiscordService service)
+            {
+                _discordService = service;
+                if (_discordService.CurrentUser != null)
+                {
+                    UserDisplayName.Text = _discordService.CurrentUser.DisplayName;
+                    UserUsername.Text = _discordService.CurrentUser.Username;
+                    UserAvatar.ImageSource = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new System.Uri(_discordService.CurrentUser.AvatarUrl));
+                }
+            }
         }
     }
 }

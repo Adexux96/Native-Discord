@@ -6,7 +6,7 @@
 *   **Framework:** WinUI 3 (Windows App SDK), **Unpackaged** (`WindowsPackageType=None`).
 *   **Networking:** Custom [DiscordHttpService](file:///c:/Users/Adexux/Desktop/Native%20Discord/NativeDiscord/Services/DiscordHttpService.cs) (using `HttpClient`).
 *   **Authentication:** [WebView2](file:///c:/Users/Adexux/Desktop/Native%20Discord/NativeDiscord/Views/LoginPage.xaml.cs) for login; user token extracted via script injection.
-*   **Data Models:** Custom models in [DataModels.cs](file:///c:/Users/Adexux/Desktop/Native%20Discord/NativeDiscord/Models/DataModels.cs) with `[JsonPropertyName]` for serialization.
+*   **Data Models:** Custom models in the `Models/` directory with `[JsonPropertyName]` for serialization.
 
 ### 2. Libraries & External Dependencies (Planned)
 *   **WebRTC (Voice/Video):** Need a wrapper like `MixedReality-WebRTC` or `SIPSorcery` for UDP voice packets and Opus encoding. WinUI 3 has no native WebRTC.
@@ -27,7 +27,7 @@
     *   **Recents:** Automatically tracks visited channels and DMs in a "Recents" list, displayed when the search box is empty.
     *   **Navigation:** clicking a result now correctly navigates to the specific Chat (DM or Server Channel) using `FriendsPageNavigationArgs`.
     *   **UI Safety:** Fixed crashes related to missing icons in Recents by implementing robust null checks and switching to `Image` controls.
-*   **Relationship Model Enhancements ([DataModels.cs](file:///c:/Users/Adexux/Desktop/Native%20Discord/NativeDiscord/Models/DataModels.cs)):**
+*   **Relationship Model Enhancements (`Relationship.cs`):**
     *   Added `StatusText` property (returns "Blocked", "Incoming Friend Request", "Outgoing Friend Request", or "Offline").
     *   Added `StatusColor` property (Red for blocked, Gray for others).
     *   Added `IsOnline` property (dynamically updated via Gateway presence events).
@@ -129,7 +129,7 @@
 | `DiscordHttpService.cs` | HTTP API calls (`GetRelationshipsAsync`, `SendFriendRequestAsync`, etc.) |
 | `DiscordGatewayService.cs` | WebSocket connection for real-time events (`READY`, `PRESENCE_UPDATE`, `MESSAGE_CREATE`) |
 | `DiscordService.cs` | Central hub managing HTTP+Gateway, shared state (Relationships, Guilds), and event propagation |
-| `DataModels.cs` | User, Server, Channel, Message, Relationship models (updated with Gateway payloads) |
+| `Models/` | User, Server, Channel, Message, Relationship models (updated with Gateway payloads) |
 | `FriendsListPage.xaml/.cs` | Friends UI with tabs, search, filtering |
 | `ChatPage.xaml/.cs` | Message display with markdown and send functionality |
 

@@ -87,6 +87,15 @@
 
         <!-- Messages List -->
         <ListView Grid.Row="1" x:Name="MessagesList" SelectionMode="None" Padding="0,0,0,16">
+            <ListView.Header>
+                <Button x:Name="LoadMoreButton"
+                        Content="Load Older Messages"
+                        HorizontalAlignment="Center"
+                        Margin="0,16"
+                        Click="LoadMoreButton_Click"
+                        Style="{StaticResource DefaultButtonStyle}"
+                        Visibility="Visible"/>
+            </ListView.Header>
             <ListView.ItemTemplate>
             <DataTemplate x:DataType="local:MessageViewModel">
                 <StackPanel>

@@ -464,80 +464,75 @@ namespace NativeDiscord.Views
                 UserProfileSidebar.Visibility = Visibility.Visible;
         }
 
-        private async System.Threading.Tasks.Task LoadMessagesAsync()
+        private bool _isLoadingMore = false;
+        private bool _hasMoreMessages = true;
+
+        private async System.Threading.Tasks.Task LoadMessagesAsync(string beforeId = null)
         {
+            if (_isLoadingMore) return;
+            _isLoadingMore = true;
+
             try
             {
-                LoadingRing.IsActive = true;
-                MessagesList.ItemsSource = null;
-                Messages.Clear();
+                if (beforeId == null)
+                {
+                    LoadingRing.IsActive = true;
+                    MessagesList.ItemsSource = null;
+                    Messages.Clear();
+                }
 
-                var rawMessages = await _discordService.Http.GetMessagesAsync(_currentChannel.Id);
+                var rawMessages = await _discordService.Http.GetMessagesAsync(_currentChannel.Id, beforeId);
                 
-                // Process messages for grouping
-                // API gives newest first. We need oldest first for chat log.
+                if (rawMessages.Count < 50)
+                {
+                    _hasMoreMessages = false;
+                }
+
+                // API gives newest first.
+                // When loading more (beforeId != null), these are OLDER messages.
+                // When initial load, we want them oldest to newest.
                 var orderedMessages = ((System.Collections.Generic.IEnumerable<Message>)rawMessages).Reverse().ToList();
 
-                MessageViewModel previous = null;
-
-                foreach (var msg in orderedMessages)
+                if (beforeId == null)
                 {
-                    bool showHeader = true;
-                    bool showDateHeader = false;
-                    string dateHeaderText = "";
-
-                    if (previous != null)
+                    MessageViewModel previous = null;
+                    foreach (var msg in orderedMessages)
                     {
-                        // Check for Date Header
-                        if (previous.Message.Timestamp.Date != msg.Timestamp.Date)
-                        {
-                            showDateHeader = true;
-                            dateHeaderText = msg.Timestamp.ToString("D");
-                            showHeader = true; // Always show user header on new date
-                        }
-                        else if (msg.ReferencedMessage != null)
-                        {
-                            // Always show header for replies
-                            showHeader = true;
-                        }
-                        else if (previous.Message.Author.Id == msg.Author.Id)
-                        {
-                            var timeDiff = msg.Timestamp - previous.Message.Timestamp;
-                            if (timeDiff.TotalMinutes < 7)
-                            {
-                                showHeader = false;
-                            }
-                        }
+                        var vm = CreateMessageViewModel(msg, previous);
+                        Messages.Add(vm);
+                        previous = vm;
                     }
-                    else
-                    {
-                        // First message
-                        showDateHeader = true;
-                        dateHeaderText = msg.Timestamp.ToString("D");
-                    }
-
-                    var vm = new MessageViewModel 
-                    { 
-                        Message = msg, 
-                        ShowHeader = showHeader,
-                        ShowDateHeader = showDateHeader,
-                        DateHeaderText = dateHeaderText,
-
-                        CanModify = msg.Author.Id == _discordService.CurrentUser?.Id,
-                        Service = _discordService,
-                        CurrentGuildId = CurrentGuildId
-                    };
-                    vm.InitializeWrappers();
-                    Messages.Add(vm);
-                    previous = vm;
+                    MessagesList.ItemsSource = Messages;
+                    if (Messages.Count > 0) MessagesList.ScrollIntoView(Messages.Last());
                 }
-                
-                MessagesList.ItemsSource = Messages;
-                
-                // Scroll to bottom
-                if (Messages.Count > 0)
+                else
                 {
-                    MessagesList.ScrollIntoView(Messages.Last());
+                    // Prepend older messages
+                    // We need to re-evaluate the first existing message's header if we prepend
+                    var firstExisting = Messages.FirstOrDefault();
+
+                    for (int i = orderedMessages.Count - 1; i >= 0; i--)
+                    {
+                        var msg = orderedMessages[i];
+                        // To correctly handle headers when prepending, it's a bit more complex.
+                        // Simple way: Prepend them all, then fix headers?
+                        // Or just prepend and accept headers might be slightly off for the junction.
+
+                        // For simplicity, let's just prepend.
+                        var vm = new MessageViewModel
+                        {
+                            Message = msg,
+                            ShowHeader = true, // Default to true for now when loading more
+                            CanModify = msg.Author.Id == _discordService.CurrentUser?.Id,
+                            Service = _discordService,
+                            CurrentGuildId = CurrentGuildId
+                        };
+                        vm.InitializeWrappers();
+                        Messages.Insert(0, vm);
+                    }
+
+                    // Fix headers for the whole collection to be sure
+                    FixMessageHeaders();
                 }
             }
             catch (Exception ex)
@@ -547,6 +542,106 @@ namespace NativeDiscord.Views
             finally
             {
                 LoadingRing.IsActive = false;
+                _isLoadingMore = false;
+            }
+        }
+
+        private MessageViewModel CreateMessageViewModel(Message msg, MessageViewModel previous)
+        {
+            bool showHeader = true;
+            bool showDateHeader = false;
+            string dateHeaderText = "";
+
+            if (previous != null)
+            {
+                if (previous.Message.Timestamp.Date != msg.Timestamp.Date)
+                {
+                    showDateHeader = true;
+                    dateHeaderText = msg.Timestamp.ToString("D");
+                    showHeader = true;
+                }
+                else if (msg.ReferencedMessage != null)
+                {
+                    showHeader = true;
+                }
+                else if (previous.Message.Author.Id == msg.Author.Id)
+                {
+                    var timeDiff = msg.Timestamp - previous.Message.Timestamp;
+                    if (timeDiff.TotalMinutes < 7)
+                    {
+                        showHeader = false;
+                    }
+                }
+            }
+            else
+            {
+                showDateHeader = true;
+                dateHeaderText = msg.Timestamp.ToString("D");
+            }
+
+            var vm = new MessageViewModel
+            {
+                Message = msg,
+                ShowHeader = showHeader,
+                ShowDateHeader = showDateHeader,
+                DateHeaderText = dateHeaderText,
+                CanModify = msg.Author.Id == _discordService.CurrentUser?.Id,
+                Service = _discordService,
+                CurrentGuildId = CurrentGuildId
+            };
+            vm.InitializeWrappers();
+            return vm;
+        }
+
+        private void FixMessageHeaders()
+        {
+            MessageViewModel previous = null;
+            foreach (var vm in Messages)
+            {
+                bool showHeader = true;
+                bool showDateHeader = false;
+                string dateHeaderText = "";
+
+                if (previous != null)
+                {
+                    if (previous.Message.Timestamp.Date != vm.Message.Timestamp.Date)
+                    {
+                        showDateHeader = true;
+                        dateHeaderText = vm.Message.Timestamp.ToString("D");
+                        showHeader = true;
+                    }
+                    else if (vm.Message.ReferencedMessage != null)
+                    {
+                        showHeader = true;
+                    }
+                    else if (previous.Message.Author.Id == vm.Message.Author.Id)
+                    {
+                        var timeDiff = vm.Message.Timestamp - previous.Message.Timestamp;
+                        if (timeDiff.TotalMinutes < 7)
+                        {
+                            showHeader = false;
+                        }
+                    }
+                }
+                else
+                {
+                    showDateHeader = true;
+                    dateHeaderText = vm.Message.Timestamp.ToString("D");
+                }
+
+                vm.ShowHeader = showHeader;
+                vm.ShowDateHeader = showDateHeader;
+                vm.DateHeaderText = dateHeaderText;
+                vm.NotifyHeaderChanged();
+                previous = vm;
+            }
+        }
+
+        private async void LoadMoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Messages.Count > 0)
+            {
+                await LoadMessagesAsync(Messages[0].Message.Id);
             }
         }
 
@@ -987,6 +1082,16 @@ namespace NativeDiscord.Views
         
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
+
+        public void NotifyHeaderChanged()
+        {
+            OnPropertyChanged(nameof(ShowHeader));
+            OnPropertyChanged(nameof(HeaderVisibility));
+            OnPropertyChanged(nameof(TimestampVisibility));
+            OnPropertyChanged(nameof(ShowDateHeader));
+            OnPropertyChanged(nameof(DateHeaderVisibility));
+            OnPropertyChanged(nameof(DateHeaderText));
+        }
 
         public void RefreshContent()
         {

@@ -6,7 +6,40 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Settings" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <Grid Background="{StaticResource DiscordBackgroundPrimary}">
+        <StackPanel Margin="32" Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
+            <TextBlock Text="User Settings" FontSize="24" FontWeight="Bold" Foreground="{StaticResource DiscordTextNormal}"/>
+
+            <Border Background="{StaticResource DiscordBackgroundSecondary}" Padding="16" CornerRadius="8">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="My Account" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource DiscordTextNormal}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Ellipse Width="80" Height="80" VerticalAlignment="Top">
+                            <Ellipse.Fill>
+                                <ImageBrush x:Name="UserAvatar"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Spacing="4">
+                            <TextBlock x:Name="UserDisplayName" FontSize="20" FontWeight="Bold" Foreground="{StaticResource DiscordTextNormal}"/>
+                            <TextBlock x:Name="UserUsername" FontSize="14" Foreground="{StaticResource DiscordTextMuted}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource DiscordBackgroundTertiary}"/>
+
+                    <TextBlock Text="Email: [Private]" Foreground="{StaticResource DiscordTextNormal}"/>
+                    <TextBlock Text="Phone: [Private]" Foreground="{StaticResource DiscordTextNormal}"/>
+                </StackPanel>
+            </Border>
+
+            <Button Content="Logout" Background="#ED4245" Foreground="White" BorderThickness="0" Padding="16,8" CornerRadius="4"/>
+        </StackPanel>
     </Grid>
 </Page>

@@ -226,10 +226,16 @@ namespace NativeDiscord.Services
             return JsonSerializer.Deserialize<List<Role>>(json, options);
         }
 
-        public async Task<List<Message>> GetMessagesAsync(string channelId)
+        public async Task<List<Message>> GetMessagesAsync(string channelId, string before = null)
         {
             // Fetch last 50 messages
-            var response = await _httpClient.GetAsync(BaseUrl + $"/channels/{channelId}/messages?limit=50");
+            string url = BaseUrl + $"/channels/{channelId}/messages?limit=50";
+            if (!string.IsNullOrEmpty(before))
+            {
+                url += $"&before={before}";
+            }
+
+            var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();

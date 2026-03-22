@@ -181,6 +181,12 @@ namespace NativeDiscord.Views
                 mw.ShowSearch();
             }
         }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            HomeContentFrame.Navigate(typeof(SettingsPage), _discordService);
+            HomeContentFrame.BackStack.Clear();
+        }
     }
 
     public class FriendsPageNavigationArgs

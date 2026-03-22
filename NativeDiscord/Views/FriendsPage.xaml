@@ -125,7 +125,7 @@
                         <ToolTipService.ToolTip>Deafen</ToolTipService.ToolTip>
                      </Button>
                      <!-- Settings -->
-                     <Button Background="Transparent" BorderThickness="0" Padding="6" CornerRadius="4">
+                     <Button Click="SettingsButton_Click" Background="Transparent" BorderThickness="0" Padding="6" CornerRadius="4">
                         <FontIcon Glyph="&#xE713;" FontSize="16" Foreground="{StaticResource DiscordInteractiveNormal}"/>
                         <ToolTipService.ToolTip>User Settings</ToolTipService.ToolTip>
                      </Button>
