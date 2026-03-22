@@ -43,6 +43,11 @@ namespace NativeDiscord.Views
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
         public ChatPage()
         {
             this.InitializeComponent();
@@ -486,7 +491,7 @@ namespace NativeDiscord.Views
 
                     // Reset pagination state on initial load
                     _hasMoreMessages = true;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadMoreVisibility)));
+                    OnPropertyChanged(nameof(LoadMoreVisibility));
                 }
 
                 var rawMessages = await _discordService.Http.GetMessagesAsync(_currentChannel.Id, beforeId);
@@ -494,7 +499,7 @@ namespace NativeDiscord.Views
                 if (rawMessages.Count < 50)
                 {
                     _hasMoreMessages = false;
-                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(LoadMoreVisibility)));
+                    OnPropertyChanged(nameof(LoadMoreVisibility));
                 }
 
                 // API gives newest first.
@@ -1090,6 +1095,7 @@ namespace NativeDiscord.Views
         // We need to call InitializeWrappers after setting Service/Message
         
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         public void NotifyHeaderChanged()
