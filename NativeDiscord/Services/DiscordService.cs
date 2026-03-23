@@ -81,6 +81,8 @@ namespace NativeDiscord.Services
 
         private void ApplyPresences(List<NativeDiscord.Models.PresenceUpdate> presences)
         {
+             if (Relationships == null || presences == null) return;
+
              foreach (var p in presences)
              {
                  if (p.User == null) continue;
@@ -177,7 +179,7 @@ namespace NativeDiscord.Services
 
         private void ProcessPresenceUpdate(NativeDiscord.Models.PresenceUpdate e)
         {
-            if (Relationships != null && e.User != null)
+            if (Relationships != null && e != null && e.User != null)
             {
                 var rel = Relationships.Find(r => r.Id == e.User.Id || (r.User != null && r.User.Id == e.User.Id));
                 if (rel != null)
@@ -185,7 +187,7 @@ namespace NativeDiscord.Services
                     rel.Status = e.Status;
                     rel.Activities = e.Activities;
                     CheckResolveIcons(rel);
-                    System.Diagnostics.Debug.WriteLine($"Updated user {rel.User.Username} to {rel.Status} ({rel.ActivityText})");
+                    System.Diagnostics.Debug.WriteLine($"Updated user {rel.User?.Username} to {rel.Status} ({rel.ActivityText})");
                 }
             }
             

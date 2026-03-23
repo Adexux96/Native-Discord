@@ -125,6 +125,12 @@ namespace NativeDiscord.Services
             }
         }
 
+        private static JsonSerializerOptions DefaultOptions => new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            TypeInfoResolver = Helpers.DiscordJsonContext.Default
+        };
+
         private void ProcessPayload(string json)
         {
             try
@@ -143,7 +149,7 @@ namespace NativeDiscord.Services
                     switch (op)
                     {
                         case 10: // Hello
-                            var hello = JsonSerializer.Deserialize<GatewayHello>(root.GetProperty("d").GetRawText());
+                            var hello = JsonSerializer.Deserialize<GatewayHello>(root.GetProperty("d").GetRawText(), DefaultOptions);
                             _heartbeatInterval = hello.HeartbeatInterval;
                             StartHeartbeat();
                             SendIdentify();
@@ -172,48 +178,48 @@ namespace NativeDiscord.Services
             switch (eventName)
             {
                 case "READY":
-                    var ready = JsonSerializer.Deserialize<ReadyPayload>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var ready = JsonSerializer.Deserialize<ReadyPayload>(data.GetRawText(), DefaultOptions);
                     OnReady?.Invoke(this, ready);
                     System.Diagnostics.Debug.WriteLine($"Gateway READY. Presences: {ready?.Presences?.Count ?? 0}");
                     break;
 
                 case "PRESENCE_UPDATE":
-                    var presence = JsonSerializer.Deserialize<PresenceUpdate>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var presence = JsonSerializer.Deserialize<PresenceUpdate>(data.GetRawText(), DefaultOptions);
                     OnPresenceUpdate?.Invoke(this, presence);
                     break;
 
                 case "MESSAGE_CREATE":
-                    var message = JsonSerializer.Deserialize<Message>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var message = JsonSerializer.Deserialize<Message>(data.GetRawText(), DefaultOptions);
                     OnMessageCreate?.Invoke(this, message);
                     break;
 
                 case "MESSAGE_UPDATE":
-                    var updatedMessage = JsonSerializer.Deserialize<Message>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var updatedMessage = JsonSerializer.Deserialize<Message>(data.GetRawText(), DefaultOptions);
                     OnMessageUpdate?.Invoke(this, updatedMessage);
                     break;
 
                 case "MESSAGE_DELETE":
-                    var deletedMessage = JsonSerializer.Deserialize<MessageDeletedPayload>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var deletedMessage = JsonSerializer.Deserialize<MessageDeletedPayload>(data.GetRawText(), DefaultOptions);
                     OnMessageDelete?.Invoke(this, deletedMessage);
                     break;
                     
                 case "VOICE_STATE_UPDATE":
-                    var voiceState = JsonSerializer.Deserialize<VoiceState>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var voiceState = JsonSerializer.Deserialize<VoiceState>(data.GetRawText(), DefaultOptions);
                     OnVoiceStateUpdate?.Invoke(this, voiceState);
                     break;
 
                 case "TYPING_START":
-                    var typing = JsonSerializer.Deserialize<TypingStartPayload>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var typing = JsonSerializer.Deserialize<TypingStartPayload>(data.GetRawText(), DefaultOptions);
                     OnTypingStart?.Invoke(this, typing);
                     break;
                     
                 case "MESSAGE_REACTION_ADD":
-                    var reactionAdd = JsonSerializer.Deserialize<MessageReactionUpdatePayload>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var reactionAdd = JsonSerializer.Deserialize<MessageReactionUpdatePayload>(data.GetRawText(), DefaultOptions);
                     OnMessageReactionAdd?.Invoke(this, reactionAdd);
                     break;
                     
                 case "MESSAGE_REACTION_REMOVE":
-                    var reactionRemove = JsonSerializer.Deserialize<MessageReactionUpdatePayload>(data.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var reactionRemove = JsonSerializer.Deserialize<MessageReactionUpdatePayload>(data.GetRawText(), DefaultOptions);
                     OnMessageReactionRemove?.Invoke(this, reactionRemove);
                     break;
             }
@@ -229,13 +235,13 @@ namespace NativeDiscord.Services
                  {
                      await Task.Delay(_heartbeatInterval, _cancellationTokenSource.Token);
                      
-                     var payload = new 
+                     var payload = new GatewayPayload
                      {
-                         op = 1,
-                         d = _sequenceNumber
+                         OpCode = 1,
+                         Data = _sequenceNumber
                      };
                      
-                     string json = JsonSerializer.Serialize(payload);
+                     string json = JsonSerializer.Serialize(payload, DefaultOptions);
                      await SendJsonAsync(json);
                  }
                  catch (TaskCanceledException) { break; }
@@ -258,32 +264,16 @@ namespace NativeDiscord.Services
                     Browser = "Chrome",
                     Device = "NativeDiscord"
                 },
-                Intents = 32767 // All intents for now (simplifies things, though unrelated to bot intents restrictions for user tokens)
-                // Note: User tokens don't stricly use intents the same way bots do, but sending basic structure is good.
-                // Actually for user accounts, we don't send intents usually? Or we do? 
-                // Let's send 0 or omit if it fails. But v9+ usually requires intents for bots.
-                // User accounts get everything by default (except privileged if bot).
-                // Let's try omitting intents if this fails, but for now I'll include '0' or effectively just use what we have.
-                // Actually, standard clients just send properties and other state.
+                Intents = 32767
             };
 
-            // Raw payload construction to avoid strict typing issues with Intents if not needed
-            var payload = new
+            var payload = new GatewayPayload
             {
-                op = 2,
-                d = new
-                {
-                    token = _token,
-                    properties = new
-                    {
-                        os = "Windows",
-                        browser = "Chrome",
-                        device = "NativeDiscord" // Can verify this
-                    }
-                }
+                OpCode = 2,
+                Data = identify
             };
             
-            await SendJsonAsync(JsonSerializer.Serialize(payload));
+            await SendJsonAsync(JsonSerializer.Serialize(payload, DefaultOptions));
         }
 
         private async Task SendJsonAsync(string json)

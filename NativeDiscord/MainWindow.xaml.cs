@@ -124,6 +124,9 @@ namespace NativeDiscord
                         await _discordService.LoginAsync(token);
                         await _discordService.InitializeDataAsync();
                         
+                        // Small delay to ensure everything is ready
+                        await Task.Delay(100);
+
                         // Populate Server List (ItemsSource binding)
                         if (_discordService.Guilds != null)
                         {

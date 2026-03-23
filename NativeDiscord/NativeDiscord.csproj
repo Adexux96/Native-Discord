@@ -26,6 +26,7 @@
     
     <!-- LANGUAGE CLEANUP: Force only English resources -->
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <ResourceLanguages>en-US</ResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>

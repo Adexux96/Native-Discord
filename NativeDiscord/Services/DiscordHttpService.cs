@@ -64,8 +64,7 @@ namespace NativeDiscord.Services
                 if (System.IO.File.Exists(filePath))
                 {
                     var json = await System.IO.File.ReadAllTextAsync(filePath);
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    var loaded = JsonSerializer.Deserialize<List<Channel>>(json, options);
+                    var loaded = JsonSerializer.Deserialize<List<Channel>>(json, DefaultOptions);
                     if (loaded != null)
                     {
                         RecentChannels = loaded;
@@ -87,7 +86,7 @@ namespace NativeDiscord.Services
 
                 var filePath = System.IO.Path.Combine(folderPath, RecentsFileName);
                 
-                var json = JsonSerializer.Serialize(RecentChannels);
+                var json = JsonSerializer.Serialize(RecentChannels, DefaultOptions);
                 await System.IO.File.WriteAllTextAsync(filePath, json);
             }
             catch (Exception ex)
@@ -101,14 +100,19 @@ namespace NativeDiscord.Services
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token); // User tokens don't use "Bot" prefix
         }
 
+        private static JsonSerializerOptions DefaultOptions => new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            TypeInfoResolver = Helpers.DiscordJsonContext.Default
+        };
+
         public async Task<List<Relationship>> GetRelationshipsAsync()
         {
             var response = await _httpClient.GetAsync(BaseUrl + "/users/@me/relationships");
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<Relationship>>(json, options);
+            return JsonSerializer.Deserialize<List<Relationship>>(json, DefaultOptions);
         }
 
         public async Task<List<User>> GetFriendsAsync()
@@ -133,13 +137,12 @@ namespace NativeDiscord.Services
              // POST /users/@me/relationships
              // Body: { "username": "name", "discriminator": "1234" }
              
-             object payload;
+             string jsonPayload;
              if (!string.IsNullOrEmpty(discriminator))
-                payload = new { username = username, discriminator = discriminator };
+                jsonPayload = JsonSerializer.Serialize(new { username = username, discriminator = discriminator }, DefaultOptions);
              else
-                payload = new { username = username };
+                jsonPayload = JsonSerializer.Serialize(new { username = username }, DefaultOptions);
 
-             var jsonPayload = JsonSerializer.Serialize(payload);
              var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
              var response = await _httpClient.PostAsync(BaseUrl + "/users/@me/relationships", httpContent);
@@ -152,8 +155,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<User>(json, options);
+            return JsonSerializer.Deserialize<User>(json, DefaultOptions);
         }
 
         public async Task<User> GetUserAsync(string userId)
@@ -162,8 +164,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<User>(json, options);
+            return JsonSerializer.Deserialize<User>(json, DefaultOptions);
         }
 
         public async Task<List<Server>> GetGuildsAsync()
@@ -172,8 +173,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<Server>>(json, options);
+            return JsonSerializer.Deserialize<List<Server>>(json, DefaultOptions);
         }
 
         public async Task<List<Channel>> GetChannelsAsync(string guildId)
@@ -182,8 +182,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var channels = JsonSerializer.Deserialize<List<Channel>>(json, options);
+            var channels = JsonSerializer.Deserialize<List<Channel>>(json, DefaultOptions);
             
             // Ensure GuildId is set (API usually sends it, but let's be safe)
             if (channels != null)
@@ -202,8 +201,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<Channel>(json, options);
+            return JsonSerializer.Deserialize<Channel>(json, DefaultOptions);
         }
 
         public async Task<GuildMember> GetGuildMemberAsync(string guildId, string userId)
@@ -212,8 +210,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<GuildMember>(json, options);
+            return JsonSerializer.Deserialize<GuildMember>(json, DefaultOptions);
         }
 
         public async Task<List<Role>> GetRolesAsync(string guildId)
@@ -222,8 +219,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<Role>>(json, options);
+            return JsonSerializer.Deserialize<List<Role>>(json, DefaultOptions);
         }
 
         public async Task<List<Message>> GetMessagesAsync(string channelId, string before = null)
@@ -239,27 +235,25 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<Message>>(json, options);
+            return JsonSerializer.Deserialize<List<Message>>(json, DefaultOptions);
         }
 
         public async Task SendMessageAsync(string channelId, string content, MessageReference messageReference = null)
         {
-            object payload;
+            string jsonPayload;
             if (messageReference != null)
             {
-                payload = new 
+                jsonPayload = JsonSerializer.Serialize(new
                 { 
                     content = content,
                     message_reference = messageReference
-                };
+                }, DefaultOptions);
             }
             else
             {
-                payload = new { content = content };
+                jsonPayload = JsonSerializer.Serialize(new { content = content }, DefaultOptions);
             }
 
-            var jsonPayload = JsonSerializer.Serialize(payload);
             var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(BaseUrl + $"/channels/{channelId}/messages", httpContent);
@@ -274,8 +268,7 @@ namespace NativeDiscord.Services
 
         public async Task EditMessageAsync(string channelId, string messageId, string content)
         {
-            var payload = new { content = content };
-            var jsonPayload = JsonSerializer.Serialize(payload);
+            var jsonPayload = JsonSerializer.Serialize(new { content = content }, DefaultOptions);
             var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PatchAsync(BaseUrl + $"/channels/{channelId}/messages/{messageId}", httpContent);
@@ -289,8 +282,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<Channel>>(json, options);
+            return JsonSerializer.Deserialize<List<Channel>>(json, DefaultOptions);
         }
 
 
@@ -303,8 +295,7 @@ namespace NativeDiscord.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<Application>(json, options);
+            return JsonSerializer.Deserialize<Application>(json, DefaultOptions);
         }
         public async Task AddReactionAsync(string channelId, string messageId, Emoji emoji)
         {
