@@ -8,8 +8,13 @@ namespace NativeDiscord.Models
 {
     public class Relationship : INotifyPropertyChanged
     {
+        [JsonPropertyName("id")]
         public string Id { get; set; }
+
+        [JsonPropertyName("type")]
         public int Type { get; set; } // 1 = Friend, 2 = Blocked, 3 = Incoming, 4 = Outgoing
+
+        [JsonPropertyName("user")]
         public User User { get; set; }
 
         private List<Activity> _activities;

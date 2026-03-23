@@ -137,11 +137,8 @@ namespace NativeDiscord.Services
              // POST /users/@me/relationships
              // Body: { "username": "name", "discriminator": "1234" }
              
-             string jsonPayload;
-             if (!string.IsNullOrEmpty(discriminator))
-                jsonPayload = JsonSerializer.Serialize(new { username = username, discriminator = discriminator }, DefaultOptions);
-             else
-                jsonPayload = JsonSerializer.Serialize(new { username = username }, DefaultOptions);
+             var payload = new FriendRequest { Username = username, Discriminator = discriminator };
+             string jsonPayload = JsonSerializer.Serialize(payload, DefaultOptions);
 
              var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
@@ -240,19 +237,12 @@ namespace NativeDiscord.Services
 
         public async Task SendMessageAsync(string channelId, string content, MessageReference messageReference = null)
         {
-            string jsonPayload;
-            if (messageReference != null)
+            var payload = new MessageRequest
             {
-                jsonPayload = JsonSerializer.Serialize(new
-                { 
-                    content = content,
-                    message_reference = messageReference
-                }, DefaultOptions);
-            }
-            else
-            {
-                jsonPayload = JsonSerializer.Serialize(new { content = content }, DefaultOptions);
-            }
+                Content = content,
+                MessageReference = messageReference
+            };
+            string jsonPayload = JsonSerializer.Serialize(payload, DefaultOptions);
 
             var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
@@ -268,7 +258,8 @@ namespace NativeDiscord.Services
 
         public async Task EditMessageAsync(string channelId, string messageId, string content)
         {
-            var jsonPayload = JsonSerializer.Serialize(new { content = content }, DefaultOptions);
+            var payload = new EditMessageRequest { Content = content };
+            var jsonPayload = JsonSerializer.Serialize(payload, DefaultOptions);
             var httpContent = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PatchAsync(BaseUrl + $"/channels/{channelId}/messages/{messageId}", httpContent);

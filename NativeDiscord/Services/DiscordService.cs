@@ -64,6 +64,8 @@ namespace NativeDiscord.Services
 
         private void ProcessReadyPayload(NativeDiscord.Models.ReadyPayload e)
         {
+            if (e == null) return;
+
             if (e.Presences != null)
             {
                 if (Relationships != null)
@@ -179,7 +181,9 @@ namespace NativeDiscord.Services
 
         private void ProcessPresenceUpdate(NativeDiscord.Models.PresenceUpdate e)
         {
-            if (Relationships != null && e != null && e.User != null)
+            if (e == null || e.User == null) return;
+
+            if (Relationships != null)
             {
                 var rel = Relationships.Find(r => r.Id == e.User.Id || (r.User != null && r.User.Id == e.User.Id));
                 if (rel != null)
